@@ -1,0 +1,53 @@
+[
+  {
+    "variant": "q_fast_decay",
+    "hyperparameters": {
+      "alpha": 0.1,
+      "gamma": 0.99,
+      "eps_start": 1.0,
+      "eps_min": 0.05,
+      "eps_decay": 0.95,
+      "decay_after": 5000
+    },
+    "episodes": 300,
+    "mean_reward": -24.451366424560547,
+    "mean_advantage": 6.875232696533203,
+    "final_reward": -27.420000076293945,
+    "best_reward": -14.720000267028809,
+    "baseline_mean": -31.326599999999996
+  },
+  {
+    "variant": "q_slow_decay",
+    "hyperparameters": {
+      "alpha": 0.1,
+      "gamma": 0.99,
+      "eps_start": 1.0,
+      "eps_min": 0.05,
+      "eps_decay": 0.995,
+      "decay_after": 10000
+    },
+    "episodes": 300,
+    "mean_reward": -27.528167724609375,
+    "mean_advantage": 3.7984325885772705,
+    "final_reward": -27.149999618530273,
+    "best_reward": -16.40999984741211,
+    "baseline_mean": -31.326599999999996
+  },
+  {
+    "variant": "q_low_lr",
+    "hyperparameters": {
+      "alpha": 0.05,
+      "gamma": 0.99,
+      "eps_start": 1.0,
+      "eps_min": 0.05,
+      "eps_decay": 0.995,
+      "decay_after": 10000
+    },
+    "episodes": 300,
+    "mean_reward": -27.351802825927734,
+    "mean_advantage": 3.9747989177703857,
+    "final_reward": -28.850000381469727,
+    "best_reward": -17.93000030517578,
+    "baseline_mean": -31.326599999999996
+  }
+]
