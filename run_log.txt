@@ -1,0 +1,16 @@
+2025-05-29 13:12:19,941 INFO: Running random-policy baseline …
+2025-05-29 13:31:43,314 INFO: Baseline done in 1163.4s  |  µ = -61.28
+2025-05-29 13:31:43,314 INFO: Launching 3 variants on 3 worker processes
+2025-05-30 10:07:55,979 INFO: Variant q_slow_decay finished in 74170.1s (mean=-39.54)
+2025-05-30 10:35:43,053 INFO: Variant q_low_lr finished in 75837.1s (mean=-40.42)
+2025-05-30 12:19:12,076 INFO: Variant q_fast_decay finished in 82046.1s (mean=-36.38)
+2025-05-30 12:19:12,077 INFO: q_fast_decay    finished in 82046.1s (µ= -36.38)
+2025-05-30 12:19:12,078 INFO: q_slow_decay    finished in 74170.1s (µ= -39.54)
+2025-05-30 12:19:12,078 INFO: q_low_lr        finished in 75837.1s (µ= -40.42)
+2025-05-30 12:19:14,997 INFO: All artefacts saved to ./results/
+2025-05-30 12:19:14,998 INFO: Timing summary:
+2025-05-30 12:19:14,998 INFO:    • baseline        : 1163.4 s
+2025-05-30 12:19:14,998 INFO:    • q_fast_decay   : 82046.1 s
+2025-05-30 12:19:14,998 INFO:    • q_slow_decay   : 74170.1 s
+2025-05-30 12:19:14,998 INFO:    • q_low_lr       : 75837.1 s
+2025-05-30 12:19:14,998 INFO:    • total runtime   : 83213.1 s

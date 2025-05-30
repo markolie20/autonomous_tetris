@@ -1,6 +1,17 @@
 # main.py ────────────────────────────────────────────────────────────────
 import os, warnings, gym, numpy as np, time
 from multiprocessing import Pool, cpu_count
+import logging
+
+# --- Logging setup ---
+logging.basicConfig(
+    filename="run_log.txt",
+    filemode="a",  # append mode so you can see progress as it runs
+    format="%(asctime)s %(levelname)s: %(message)s",
+    level=logging.INFO
+)
+def log(msg):
+    logging.info(msg)
 
 # silence Gym warnings
 os.environ["GYM_ENV_CHECKER"]      = "disabled"
@@ -17,7 +28,7 @@ def _run_variant(
     hp: dict,
     seed_offset: int,
     delay_ms: int = 0,          # stagger start-up to avoid nes-py race (Windows)
-    skip: int = 8,              # NES frames per step via FrameSkip wrapper
+    skip: int = 12,              # NES frames per step via FrameSkip wrapper
 ):
     """
     Run one Q-learning variant in its own process.
@@ -56,24 +67,23 @@ def _run_variant(
 
     env.close()
     elapsed = time.perf_counter() - start
+    log(f"Variant {name} finished in {elapsed:.1f}s (mean={np.mean(returns):.2f})")
     return name, returns, elapsed
 # ------------------------------------------------------------------------
 def main():
     grand_start = time.perf_counter()
 
-    # 1️⃣  Baseline --------------------------------------------------------
-    print("⏳  Running random-policy baseline …")
+    log("Running random-policy baseline …")
     t0 = time.perf_counter()
     base_returns = baseline.run()
     baseline_time = time.perf_counter() - t0
     base_mean = base_returns.mean()
-    print(f"✅  Baseline done in {baseline_time:5.1f}s  |  µ = {base_mean:.2f}\n")
+    log(f"Baseline done in {baseline_time:5.1f}s  |  µ = {base_mean:.2f}")
 
-    # 2️⃣  Parallel variants ----------------------------------------------
     curves, variant_times = {}, {}
     items       = list(C.VARIANTS.items())
     max_workers = min(cpu_count(), len(items))
-    print(f"⚙️   Launching {len(items)} variants on {max_workers} worker processes\n")
+    log(f"Launching {len(items)} variants on {max_workers} worker processes")
 
     tasks = [
         (vname, hp, i * 10_000, i * 250)   # delay_ms = 0, 250, 500, …
@@ -84,22 +94,20 @@ def main():
         for name, rets, elapsed in pool.starmap(_run_variant, tasks):
             curves[name] = rets
             variant_times[name] = elapsed
-            print(f"🟢  {name:<15s} finished in {elapsed:5.1f}s "
-                  f"(µ={np.mean(rets):7.2f})")
+            log(f"{name:<15s} finished in {elapsed:5.1f}s (µ={np.mean(rets):7.2f})")
 
-    # 3️⃣  Persist artefacts ----------------------------------------------
     visualize.save_combined(base_mean, curves)
     visualize.save_per_variant(base_mean, curves)
     visualize.save_metrics(base_mean, curves, C.VARIANTS)
     visualize.save_smoothed_plots(curves, win=50)
 
     total_time = time.perf_counter() - grand_start
-    print("\n📊  All artefacts saved to ./results/")
-    print("⏱️   Timing summary:")
-    print(f"   • baseline        : {baseline_time:6.1f} s")
+    log("All artefacts saved to ./results/")
+    log("Timing summary:")
+    log(f"   • baseline        : {baseline_time:6.1f} s")
     for n, t in variant_times.items():
-        print(f"   • {n:<15s}: {t:6.1f} s")
-    print(f"   • total runtime   : {total_time:6.1f} s")
+        log(f"   • {n:<15s}: {t:6.1f} s")
+    log(f"   • total runtime   : {total_time:6.1f} s")
 
 # ------------------------------------------------------------------------
 if __name__ == "__main__":

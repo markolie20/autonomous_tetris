@@ -6,15 +6,15 @@
       "gamma": 0.99,
       "eps_start": 1.0,
       "eps_min": 0.05,
-      "eps_decay": 0.95,
-      "decay_after": 5000
+      "eps_decay": 0.9999895,
+      "decay_after": 20000
     },
-    "episodes": 300,
-    "mean_reward": -24.451366424560547,
-    "mean_advantage": 6.875232696533203,
-    "final_reward": -27.420000076293945,
-    "best_reward": -14.720000267028809,
-    "baseline_mean": -31.326599999999996
+    "episodes": 15000,
+    "mean_reward": -36.381656646728516,
+    "mean_advantage": 24.895587921142578,
+    "final_reward": -45.41400146484375,
+    "best_reward": -15.27400016784668,
+    "baseline_mean": -61.27724799999998
   },
   {
     "variant": "q_slow_decay",
@@ -23,15 +23,15 @@
       "gamma": 0.99,
       "eps_start": 1.0,
       "eps_min": 0.05,
-      "eps_decay": 0.995,
-      "decay_after": 10000
+      "eps_decay": 0.9999995,
+      "decay_after": 50000
     },
-    "episodes": 300,
-    "mean_reward": -27.528167724609375,
-    "mean_advantage": 3.7984325885772705,
-    "final_reward": -27.149999618530273,
-    "best_reward": -16.40999984741211,
-    "baseline_mean": -31.326599999999996
+    "episodes": 15000,
+    "mean_reward": -39.53879165649414,
+    "mean_advantage": 21.73845863342285,
+    "final_reward": -55.608001708984375,
+    "best_reward": -13.576000213623047,
+    "baseline_mean": -61.27724799999998
   },
   {
     "variant": "q_low_lr",
@@ -40,14 +40,14 @@
       "gamma": 0.99,
       "eps_start": 1.0,
       "eps_min": 0.05,
-      "eps_decay": 0.995,
-      "decay_after": 10000
+      "eps_decay": 0.9999995,
+      "decay_after": 50000
     },
-    "episodes": 300,
-    "mean_reward": -27.351802825927734,
-    "mean_advantage": 3.9747989177703857,
-    "final_reward": -28.850000381469727,
-    "best_reward": -17.93000030517578,
-    "baseline_mean": -31.326599999999996
+    "episodes": 15000,
+    "mean_reward": -40.41888427734375,
+    "mean_advantage": 20.858362197875977,
+    "final_reward": -49.47999954223633,
+    "best_reward": -13.586000442504883,
+    "baseline_mean": -61.27724799999998
   }
 ]

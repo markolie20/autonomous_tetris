@@ -36,6 +36,7 @@ class QLearningAgent:
         self.Q[s][a] += self.alpha * (td_target - self.Q[s][a])
 
     # ─────────────────────────── training loop per episode ────────────────────
+    
     def play_episode(self, env):
         """
         Run one episode and return its cumulative shaped reward G.
@@ -65,9 +66,8 @@ class QLearningAgent:
                 self.update(state, a, r, state_next, False)
                 state, prev_info = state_next, info
 
-        # ─────────────────── ε schedule (once per episode) ───────────────
-        if self.frames_seen > self.decay_after:
-            self.eps = max(self.eps_min, self.eps * self.eps_decay)
+            if self.frames_seen > self.decay_after:
+                self.eps = max(self.eps_min, self.eps * self.eps_decay)
 
         return G
 

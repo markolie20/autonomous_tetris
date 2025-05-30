@@ -1,7 +1,7 @@
 # tetris_rl/visualize.py  ─────────────────────────────────────────────────
 import os, csv, json, numpy as np, pandas as pd, matplotlib.pyplot as plt
 RESULTS_DIR = "results"
-PLOTS_DIR  = os.path.join(RESULTS_DIR, "plots_smooth")
+PLOTS_DIR  = os.path.join(RESULTS_DIR, "plots")
 DATA_DIR   = os.path.join(RESULTS_DIR, "data")
 
 # ╭───────────────────────── helpers ─────────────────────────╮
