@@ -98,10 +98,10 @@ def main():
     total_time = time.perf_counter() - grand_start
     log("All artefacts saved to ./results/")
     log("Timing summary:")
-    log(f"   • baseline        : {baseline_time:6.1f} s")
+    log(f"    baseline        : {baseline_time:6.1f} s")
     for n, t in variant_times.items():
-        log(f"   • {n:<15s}: {t:6.1f} s")
-    log(f"   • total runtime   : {total_time:6.1f} s")
+        log(f"    {n:<15s}: {t:6.1f} s")
+    log(f"    total runtime   : {total_time:6.1f} s")
 
 if __name__ == "__main__":
     main()
