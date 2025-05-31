@@ -3,11 +3,12 @@ A compact research playground that teaches a vanilla Q-learning agent to
 survive and improve in **NES Tetris** (gym-tetris 3.0.4).  
 You get a clean baseline, three hyper-parameter variants, parallel
 training, automatic visualisations (raw & smoothed) and saved artefacts
-(models | metrics | plots) ― all in <600 lines of code.
+(models | metrics | plots)
 
 ---
 
 ## 1. Project layout
+```
 autonomous_tetris/
 │ main.py ← orchestrates baseline + parallel variants
 │ requirements.txt
@@ -20,25 +21,21 @@ autonomous_tetris/
 │ ├── frame_skip.py custom k-frame skip NES wrapper
 │ ├── train.py per-variant training loop
 │ └── visualize.py plots, CSV, JSON
+│ └── play.py Seeing the models play
 └── results/ ← auto-generated (see §5)
 
-markdown
-Copy
-Edit
-
+```
 ---
 
 ## 2. Key features
 
-* **Frame-skip (8 frames)** — 6× faster wall-clock per episode.
+* **Frame-skip (8 frames)** — Each action is repeated for 8 game frames, greatly speeding up training (about 6× faster per episode) while maintaining playable game dynamics.
 * **Multiprocessing** — one emulator per CPU core, staggered start to avoid
-  nes-py DLL races on Windows.
 * **Baseline vs. variants**  
   - `q_fast_decay`  ε drops quickly  
   - `q_slow_decay`  gentler exploration schedule  
   - `q_low_lr`      half learning-rate
-* **Once-per-episode ε-decay** so exploration stays constant within an
-  episode.
+* **Once-per-frame ε-decay** — The exploration rate (epsilon) is decayed after every frame.
 * **Reward shaping**  
   `+1·lines  –0.1·holes  –0.01·aggregate height  –5 on game-over`
 * **Automatic artefacts**  
@@ -48,29 +45,27 @@ Edit
 
 ## 3. Installation
 
-1.  Python ≥ 3.10 with a C-compiler (for nes-py).  
+1.  Python ≥ 3.10
 2.  `pip install -r requirements.txt`  
 3.  On Windows make sure the **Microsoft C++ Build Tools** are present.
-4.  Test the environment:  
-   `python -c "import gym_tetris, nes_py"` → no errors.
 
 ---
 
 ## 4. Running
 
-*Standard run (baseline + 3 variants, 300 episodes each)*  
+*Standard run (baseline + 3 variants, 15k episodes each)*  
 `python main.py`
 
 Options are edited in `tetris_rl/config.py`:
 
-| field               | meaning                                  |
-|---------------------|------------------------------------------|
-| `SEED`              | global RNG seed                          |
-| `BASELINE_EPISODES` | baseline length                          |
-| `Q_LEARNING_EPISODES` | training episodes per variant          |
-| `MAX_FRAMES`        | NES frames per episode (post skip)       |
-| `VARIANTS`          | dict of hyper-parameter bundles          |
-| `PRINT_EVERY_TRAIN` | frequency of log lines                   |
+| field                 | meaning                                  |
+|-----------------------|------------------------------------------|
+| `SEED`                | global RNG seed                          |
+| `BASELINE_EPISODES`   | baseline length                          |
+| `Q_LEARNING_EPISODES` | training episodes per variant            |
+| `MAX_FRAMES`          | NES frames per episode (post skip)       |
+| `VARIANTS`            | dict of hyper-parameter bundles          |
+| `PRINT_EVERY_TRAIN`   | frequency of log lines                   |
 
 ---
 
@@ -104,7 +99,9 @@ Options are edited in `tetris_rl/config.py`:
 * **`visualize.py`**  
   Base plots + CSV/JSON **and** a helper that applies rolling mean
   (`win`) *or* EWMA (`α`) before plotting.
-
+* **`play.py`**
+  To run play.py you have to use this: `python -m tetris_rl.play --model q_low_lr --record`  
+  This will open up a window where you can see the chosen model play the actual tetris game.
 ---
 
 ## 7. Extending the experiment
@@ -134,10 +131,3 @@ Options are edited in `tetris_rl/config.py`:
   all CPU cores are used (`task manager`).
 
 ---
-
-## 9. Credits & licence
-
-* NES Tetris environment by **gym-tetris / nes-py** (MIT licence).  
-* This project is MIT-licensed.  Use it in class, hackathons, blogs –  
-  just keep the attribution lines in `agent.py`, `env_utils.py` and
-  `frame_skip.py`.
