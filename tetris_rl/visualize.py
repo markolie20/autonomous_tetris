@@ -4,15 +4,10 @@ RESULTS_DIR = "results"
 PLOTS_DIR  = os.path.join(RESULTS_DIR, "plots")
 DATA_DIR   = os.path.join(RESULTS_DIR, "data")
 
-# ╭───────────────────────── helpers ─────────────────────────╮
 def _ensure_dir(path=RESULTS_DIR):
     if not os.path.exists(path):
         os.makedirs(path)
 
-# ╰───────────────────────────────────────────────────────────╯
-
-
-# ────────────────────────── base plots (unchanged) ──────────────────────
 def save_combined(baseline_mean: float, curves: dict[str, np.ndarray]):
     _ensure_dir()
     plt.figure(figsize=(9,5))
@@ -40,8 +35,6 @@ def save_per_variant(baseline_mean: float, curves: dict[str, np.ndarray]):
         plt.savefig(os.path.join(PLOTS_DIR, f"{name}.png"))
         plt.close()
 
-
-# ────────────────────────── CSV & summary (unchanged) ───────────────────
 def save_metrics(baseline_mean: float,
                  curves: dict[str, np.ndarray],
                  hp_grid : dict[str, dict]):
@@ -72,7 +65,6 @@ def save_metrics(baseline_mean: float,
         json.dump(summary, jf, indent=2)
 
 
-# ────────────────────────── NEW: smooth visualisation ────────────────────
 def _smooth(series: pd.Series, win: int, ewma: float | None):
     if ewma is not None:
         return series.ewm(alpha=ewma, adjust=False).mean()

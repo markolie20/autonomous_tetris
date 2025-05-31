@@ -10,9 +10,8 @@ from nes_py.wrappers import JoypadSpace
 from gym_tetris.actions import SIMPLE_MOVEMENT
 from typing import Tuple, Dict
 
-from .frame_skip import FrameSkip  # custom wrapper
+from .frame_skip import FrameSkip
 
-# ─────────────────────────── env factory ────────────────────────────────
 
 def make_env(skip: int = 8, delay_ms: int = 0) -> JoypadSpace:
     """Return a Joypad‑wrapped **TetrisA‑v3** env with optional frame‑skip."""
@@ -22,29 +21,23 @@ def make_env(skip: int = 8, delay_ms: int = 0) -> JoypadSpace:
     core = FrameSkip(core, k=skip)
     return JoypadSpace(core, SIMPLE_MOVEMENT)
 
-# ─────────────────────────── reset helper ───────────────────────────────
-
 def reset_with_seed(env: JoypadSpace, seed: int | None = None) -> Tuple[np.ndarray, dict]:
     if seed is not None:
         try:
             env.seed(seed)
-        except TypeError:            # older nes‑py
+        except TypeError:            
             env.unwrapped.seed(seed)
     obs = env.reset()
-    obs, _, _, info = env.step(0)    # prime info
+    obs, _, _, info = env.step(0)    
     return obs, info
-
-# ─────────────────────────── state building ─────────────────────────────
 
 PIECE_TO_IDX = {'I':0,'J':1,'L':2,'O':3,'S':4,'T':5,'Z':6}
 N_ACTIONS    = len(SIMPLE_MOVEMENT)
 
-# -- low‑level board analytics ------------------------------------------
-
 def _column_heights(board: np.ndarray) -> np.ndarray:
     h = 20 - board[::-1].argmax(axis=0)
     h = np.where(board.sum(axis=0)==0, 0, h)
-    return (h // 4).astype(np.int8)  # 5 buckets 0–4
+    return (h // 4).astype(np.int8)
 
 def _aggregate_height(h: np.ndarray) -> int:
     return int(h.sum())
@@ -69,17 +62,14 @@ def _max_well_depth(h: np.ndarray) -> int:
         depth = max(depth, max(left, right) - h[i])
     return depth
 
-# -- discretisers --------------------------------------------------------
-
 def _bucket(x: int, bins) -> int:
     return int(np.digitize([x], bins, right=False)[0])
 
-BINS_AH = [6, 12, 18]   # aggregate height 0‑3
-BINS_HO = [0, 2, 5]     # holes            0‑3
-BINS_BU = [4, 8, 12]    # bumpiness        0‑3
-BINS_WE = [1, 3, 5]     # max well depth   0‑3
+BINS_AH = [6, 12, 18]  
+BINS_HO = [0, 2, 5]     
+BINS_BU = [4, 8, 12]    
+BINS_WE = [1, 3, 5]     
 
-# -- public: convert env → state tuple ----------------------------------
 
 def state_from_info(env: JoypadSpace, info: Dict) -> Tuple[int, ...]:
     piece_raw = info.get("current_piece") or info.get("next_piece") or "I"
@@ -97,9 +87,6 @@ def state_from_info(env: JoypadSpace, info: Dict) -> Tuple[int, ...]:
         *tuple(h)
     )
 
-# ─────────────────────────── reward shaping ─────────────────────────────
-
-# Tuneable weights / constants
 _LIVING_PENALTY = 0.002   # applied every frame
 _HOLE_W          = 0.40
 _HEIGHT_W        = 0.02
@@ -129,8 +116,6 @@ def shaped_reward(prev_info: dict, curr_info: dict, done: bool) -> float:
     if done:
         r -= 5.0
     return r
-
-# ─────────────────────────── board extraction ───────────────────────────
 
 def _get_board(env: JoypadSpace, info: Dict) -> np.ndarray:
     if hasattr(env.unwrapped, "get_board"):

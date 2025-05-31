@@ -1,7 +1,3 @@
-"""
-Random-policy baseline that uses the *same* shaped reward as the agent.
-"""
-
 from __future__ import annotations
 import numpy as np
 from tqdm import trange

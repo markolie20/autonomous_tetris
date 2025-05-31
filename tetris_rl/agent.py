@@ -1,7 +1,3 @@
-"""
-Tabular ε-greedy Q-learning agent stored in a defaultdict.
-"""
-
 from __future__ import annotations
 from collections import defaultdict
 import numpy as np
@@ -12,7 +8,6 @@ from . import env_utils as eu
 
 class QLearningAgent:
     def __init__(self, rng: np.random.Generator, **hp):
-        # pull hyper-parameters from dict, fall back to sensible defaults
         self.alpha        = hp.get("alpha", 0.10)
         self.gamma        = hp.get("gamma", 0.99)
         self.eps          = hp.get("eps_start", 1.0)
@@ -24,7 +19,6 @@ class QLearningAgent:
         self.rng = rng
         self.frames_seen = 0
 
-    # ─────────────────────────── public helpers ───────────────────────────────
     def select_action(self, state):
         if self.rng.random() < self.eps:
             return self.rng.integers(eu.N_ACTIONS)
@@ -34,25 +28,21 @@ class QLearningAgent:
         best_next = 0.0 if terminated else np.max(self.Q[s_next])
         td_target = r + self.gamma * best_next
         self.Q[s][a] += self.alpha * (td_target - self.Q[s][a])
-
-    # ─────────────────────────── training loop per episode ────────────────────
     
     def play_episode(self, env):
         """
         Run one episode and return its cumulative shaped reward G.
         ε is updated ONCE per episode, after the final frame.
         """
-        # ─────────────────── episode init ───────────────────
         _, info  = eu.reset_with_seed(env, int(self.rng.integers(1e9)))
         state    = eu.state_from_info(env, info)
         prev_info, G = info, 0.0
 
-        # ─────────────────── main frame loop ────────────────
         for _ in range(C.MAX_FRAMES):
             a = self.select_action(state)
 
             _, _, done, info = env.step(int(a))
-            self.frames_seen += 1                      # global frame counter
+            self.frames_seen += 1                     
 
             r = eu.shaped_reward(prev_info, info, done)
             G += r
@@ -75,7 +65,7 @@ class QLearningAgent:
     def save(self, path:str):
         """Pickle the learned Q-table + hyper-params for later reload."""
         payload = {
-            "Q"   : {k: v.copy() for k, v in self.Q.items()},   # dict → np arrays
+            "Q"   : {k: v.copy() for k, v in self.Q.items()},  
             "hp"  : dict(alpha=self.alpha, gamma=self.gamma,
                          eps_start=self.eps, eps_min=self.eps_min,
                          eps_decay=self.eps_decay, decay_after=self.decay_after),

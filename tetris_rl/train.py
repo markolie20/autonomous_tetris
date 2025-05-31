@@ -6,12 +6,11 @@ from . import env_utils as eu, config as C, agent as ag
 RESULTS_DIR = "results"
 MODELS_DIR = os.path.join(RESULTS_DIR, "models")
 
-# ────────────────────────────────────────────────────────────────────────
 def train_variant(
     name: str,
     hp  : dict,
     rng,
-    env = None,                 # if provided by caller, re-use; else create
+    env = None,                 
 ) -> np.ndarray:
     """
     Train one Q-learning agent and return its per-episode returns.
@@ -31,7 +30,7 @@ def train_variant(
     """
     own_env = env is None
     if own_env:
-        env = eu.make_env(skip=8)         # default frame-skip
+        env = eu.make_env(skip=8)        
 
     learner = ag.QLearningAgent(rng, **hp)
     returns = []

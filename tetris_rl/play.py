@@ -25,7 +25,6 @@ MODELS_DIR   = Path("results/models")
 RECORD_DIR   = Path("results/recordings")
 RECORD_DIR.mkdir(parents=True, exist_ok=True)
 
-# ─────────────────────────── helpers ────────────────────────────────────
 def load_agent(model_path: Path, rng) -> ag.QLearningAgent:
     """Reconstruct agent from a pickle and set ε = 0 (fully greedy)."""
     with model_path.open("rb") as f:
@@ -34,7 +33,6 @@ def load_agent(model_path: Path, rng) -> ag.QLearningAgent:
     hp      = payload["hp"]
     q_table = payload["Q"]
 
-    # create dummy agent, then overwrite its table
     agent = ag.QLearningAgent(rng, **hp)
     agent.Q = defaultdict(lambda: np.zeros(eu.N_ACTIONS, dtype=np.float32))
     for k, v in q_table.items():
@@ -56,7 +54,7 @@ def run_episode(env: gym.Env, agent: ag.QLearningAgent, render: bool = True):
 
         a = int(np.argmax(agent.Q[state]))
         _, _, done, info = env.step(a)
-        G += eu.shaped_reward(info, info, done)   # dummy prev=curr (only final)
+        G += eu.shaped_reward(info, info, done)  
 
         if not done:
             state = eu.state_from_info(env, info)
@@ -64,7 +62,6 @@ def run_episode(env: gym.Env, agent: ag.QLearningAgent, render: bool = True):
     return G
 
 
-# ─────────────────────────── CLI ────────────────────────────────────────
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser()
     p.add_argument("--model", required=True,
@@ -86,15 +83,13 @@ def main():
     rng   = np.random.default_rng(C.SEED + 42)
     agent = load_agent(model_path, rng)
 
-    # build env (skip can be 1 so we see every frame)
     env = eu.make_env(skip=args.skip)
 
-    # optional Monitor wrapper
     if args.record:
         video_out = str(RECORD_DIR / f"{args.model}_{int(time.time())}")
         env = gym.wrappers.Monitor(env, video_out,
                                    force=True, video_callable=lambda ep: True)
-        print(f"🎥  Recording to {video_out}.mp4")
+        print(f"Recording to {video_out}.mp4")
 
     total = 0.0
     for ep in range(1, args.episodes + 1):

@@ -1,12 +1,10 @@
-# main.py ────────────────────────────────────────────────────────────────
 import os, warnings, gym, numpy as np, time
 from multiprocessing import Pool, cpu_count
 import logging
 
-# --- Logging setup ---
 logging.basicConfig(
     filename="run_log.txt",
-    filemode="a",  # append mode so you can see progress as it runs
+    filemode="a", 
     format="%(asctime)s %(levelname)s: %(message)s",
     level=logging.INFO
 )
@@ -20,15 +18,14 @@ warnings.filterwarnings("ignore", category=UserWarning)
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 gym.logger.set_level(gym.logger.ERROR)
 
-from tetris_rl import baseline, train, visualize, config as C
+from tetris_rl import baseline, visualize, config as C
 
-# ------------------------------------------------------------------------
 def _run_variant(
     name: str,
     hp: dict,
     seed_offset: int,
-    delay_ms: int = 0,          # stagger start-up to avoid nes-py race (Windows)
-    skip: int = 12,              # NES frames per step via FrameSkip wrapper
+    delay_ms: int = 0,          
+    skip: int = 12,              
 ):
     """
     Run one Q-learning variant in its own process.
@@ -56,20 +53,17 @@ def _run_variant(
 
     start = time.perf_counter()
 
-    # 1️⃣  make a dedicated env for this worker
     env = eu.make_env(skip=skip, delay_ms=delay_ms)
 
-    # 2️⃣  RNG unique to this worker
     rng = np.random.default_rng(C.SEED + seed_offset)
 
-    # 3️⃣  train with that env (train.train_variant must accept env)
     returns = train.train_variant(name, hp, rng, env)
 
     env.close()
     elapsed = time.perf_counter() - start
     log(f"Variant {name} finished in {elapsed:.1f}s (mean={np.mean(returns):.2f})")
     return name, returns, elapsed
-# ------------------------------------------------------------------------
+
 def main():
     grand_start = time.perf_counter()
 
@@ -86,7 +80,7 @@ def main():
     log(f"Launching {len(items)} variants on {max_workers} worker processes")
 
     tasks = [
-        (vname, hp, i * 10_000, i * 250)   # delay_ms = 0, 250, 500, …
+        (vname, hp, i * 10_000, i * 250) 
         for i, (vname, hp) in enumerate(C.VARIANTS.items())
     ]
 
@@ -109,6 +103,5 @@ def main():
         log(f"   • {n:<15s}: {t:6.1f} s")
     log(f"   • total runtime   : {total_time:6.1f} s")
 
-# ------------------------------------------------------------------------
 if __name__ == "__main__":
     main()

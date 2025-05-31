@@ -1,4 +1,3 @@
-# tetris_rl/frame_skip.py
 import gym
 from typing import Tuple
 
